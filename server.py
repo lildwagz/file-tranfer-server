@@ -1,27 +1,28 @@
+
 import socket
 import threading
 import os
 
-def RetrFile(name, sock):
-    filename = sock.recv(1024)
+def menerima(name, socket):
+    filename = socket.recv(1024)
     if os.path.isfile(filename):
-        sock.send("EXISTS " + str(os.path.getsize(filename)))
-        userResponse = sock.recv(1024)
+        socket.send("EXISTS " + str(os.path.getsize(filename)))
+        userResponse = socket.recv(1024)
         if userResponse[:2] == 'OK':
             with open(filename, 'rb') as f:
                 bytesToSend = f.read(1024)
-                sock.send(bytesToSend)
+                socket.send(bytesToSend)
                 while bytesToSend != "":
                     bytesToSend = f.read(1024)
-                    sock.send(bytesToSend)
+                    socket.send(bytesToSend)
     else:
-        sock.send("ERR ")
+        socket.send("ERR ")
 
-    sock.close()
+    socket.close()
 
 def Main():
     host = '127.0.0.1'
-    port = 5000
+    port = 2112
 
 
     s = socket.socket()
@@ -29,11 +30,11 @@ def Main():
 
     s.listen(5)
 
-    print "Server Started."
+    print "Server sudah siap."
     while True:
         c, addr = s.accept()
-        print "client connedted ip:<" + str(addr) + ">"
-        t = threading.Thread(target=RetrFile, args=("RetrThread", c))
+        print "client baru dari :<" + str(addr) + ">"
+        t = threading.Thread(target=menerima, args=("RetrThread", c))
         t.start()
          
     s.close()
